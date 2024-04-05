@@ -32,8 +32,9 @@ const authenticatedUser = (username, password) => {
 
 
 //only registered users can login
-customer_routes.post("/login", (req,res) => {
+regd_users.post("/login", (req,res) => {
     const { username, password } = req.query;
+    const user = {'username': username , 'password' : password}
 
     // Check if username and password are provided
     if (!username || !password) {
@@ -42,7 +43,7 @@ customer_routes.post("/login", (req,res) => {
 
     // Check if the user exists and the password matches
     if (!authenticatedUser(username, password)) {
-        return res.status(401).json({ message: 'Invalid username or password' });
+        return res.status(401).json({ message: ` Invalid username or password ${users[0]} `});
     }
     let accessToken = jwt.sign({
         data: user
@@ -50,17 +51,42 @@ customer_routes.post("/login", (req,res) => {
       req.session.authorization = {
         accessToken
     }
-    return res.status(200).send("User successfully logged in");
+    return res.status(200).send(`User successfully logged in , with username ${username} `);
 });
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  review = req.body
-  book = books.filter((books)=> books.isbn === req.params.isbn)
-  book.reviews.push(review)
-  return res.status(200).json({message: `review ${review} successfully added for ${book.title}`})
+    let isbn = req.params.isbn;
+    review = req.body.review
+    if (!review) {
+        return res.status(400).json({ message: 'Review is required' });
+        }
+    const book = books[isbn];
+    if (!book) {
+        return res.status(404).json({ message: 'Book not found' });
+        }
+
+    books[isbn].reviews[isbn] = review;
+    //book.reviews.push(review)
+    return res.status(200).json({message: `review ${JSON.stringify(books[isbn])} successfully added for ${book.title}`})
 });
 
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+
+    let isbn = req.params.isbn;
+    const book = books[isbn];
+    if (!book) {
+        return res.status(404).json({ message: 'Book not found' });
+        }
+
+    delete books[isbn].reviews[isbn]
+    //book.reviews.push(review)
+    return res.status(200).json({message: `review ${review} successfully deleted for ${book.title}  `})
+
+
+})
+
+module.exports.app = app;
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
