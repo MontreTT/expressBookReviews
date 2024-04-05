@@ -22,16 +22,37 @@ public_users.post("/register", (req,res) => {
     return  res.status(201).json({ message: `User registered successfully ${JSON.stringify(users, null, 0)} ` });
 });
 
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
+    let myPromise = new Promise((resolve,reject) => {
+        setTimeout(() => {
+          resolve("Promise resolved")
+        },6000)})
+
+    myPromise.then((successMessage) => {
+        console.log("From Callback " + successMessage)
+        return res.send(books);
+
+        })
   //Write your code here
-  return res.send(books);
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
     let isbn = req.params.isbn
-    return res.send(books[req.params.isbn]);
+    let myPromise = new Promise((resolve,reject) => {
+        setTimeout(() => {
+          resolve("Promise resolved")
+        },6000)})
+
+    myPromise.then((successMessage) => {
+        console.log("From Callback " + successMessage)
+        return res.send(books[req.params.isbn]);
+
+        })
+    
+    
  });
   
 // Get book details based on author
@@ -44,10 +65,19 @@ public_users.get('/author/:author',function (req, res) {
             filtered_user.push(books[book])
         }
     }
+    let myPromise = new Promise((resolve,reject) => {
+        setTimeout(() => {
+          resolve("Promise resolved")
+        },6000)})
+
+    myPromise.then((successMessage) => {
+        console.log("From Callback " + successMessage)
+        return res.send(filtered_user);
+        })
 
     
     
-    return res.send(filtered_user);
+    
 });
 
 // Get all books based on title
@@ -59,7 +89,16 @@ public_users.get('/title/:title',function (req, res) {
             filtered_user.push(books[book])
         }
     }
-    return res.send(filtered_user);
+    let myPromise = new Promise((resolve,reject) => {
+        setTimeout(() => {
+          resolve("Promise resolved")
+        },6000)})
+
+    myPromise.then((successMessage) => {
+        console.log("From Callback " + successMessage)
+        return res.send(filtered_user);
+        })
+
 });
 
 //  Get book review
@@ -74,5 +113,8 @@ public_users.get('/review/:isbn',function (req, res) {
     return res.send(`The review for ${filtered_user.title} is ${filtered_user.reviews}`);
     }
 });
+
+
+
 
 module.exports.general = public_users;
